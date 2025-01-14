@@ -15,12 +15,42 @@ if [ -d "${CONDA_PREFIX}/envs/jupyterai" ]; then
 fi
 
 # Create new jupyterai environment with Python 3.12
-conda create -n jupyterai python=3.12 -y
+conda config --set channel_priority strict
+conda create -n jupyterai python=3.12 -c conda-forge -y
 
 conda activate jupyterai
+conda install -y -c fastai nbdev fastcore
+conda install -y -c conda-forge jupyter-ai langchain-anthropic notebook ipython
 
-pip install notebook
-pip install jupyter-ai-magics[all]
+# Create Jupyter config directory and file if they don't exist
+mkdir -p ~/.jupyter
+CONFIG_FILE=~/.jupyter/jupyter_notebook_config.py
+IPYTHON_CONFIG_DIR=~/.ipython/profile_default
+IPYTHON_CONFIG_FILE="${IPYTHON_CONFIG_DIR}/ipython_config.py"
+
+# Create IPython profile if it doesn't exist
+if [ ! -d "$IPYTHON_CONFIG_DIR" ]; then
+    ipython profile create
+fi
+
+# Generate Jupyter config if it doesn't exist
+if [ ! -f "$CONFIG_FILE" ]; then
+    jupyter notebook --generate-config
+fi
+
+# Add jupyter_ai_magics to both configs if not already present
+if ! grep -q "c.InteractiveShellApp.extensions.append('jupyter_ai_magics')" "$CONFIG_FILE"; then
+    echo "c.InteractiveShellApp.extensions.append('jupyter_ai_magics')" >> "$CONFIG_FILE"
+    echo "Added jupyter_ai_magics to Jupyter config"
+fi
+
+if ! grep -q "c.InteractiveShellApp.extensions.append('jupyter_ai_magics')" "$IPYTHON_CONFIG_FILE"; then
+    echo "c.InteractiveShellApp.extensions = ['jupyter_ai_magics']" >> "$IPYTHON_CONFIG_FILE"
+    echo "c.AiMagics.default_language_model = 'anthropic-chat:claude-3-5-sonnet-20241022'" >> "$IPYTHON_CONFIG_FILE"
+    echo "Added jupyter_ai_magics to IPython config"
+    echo "Added default language model to IPython config (anthropic-chat:claude-3-5-sonnet-20241022)"
+    echo "Note: Please check if newer Claude models are available, as the default model may be outdated"
+fi
 
 # Prompt user about adding conda activation to .zshrc
 echo ""
