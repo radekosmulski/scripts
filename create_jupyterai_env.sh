@@ -19,7 +19,7 @@ conda config --set channel_priority strict
 conda create -n jupyterai python=3.12 -c conda-forge -y
 
 conda activate jupyterai
-conda install -y -c fastai nbdev fastcore
+conda install -y -c fastai nbdev fastcore twine
 conda install -y -c conda-forge jupyter-ai langchain-anthropic notebook ipython
 
 # Create Jupyter config directory and file if they don't exist
@@ -64,3 +64,5 @@ else
 fi
 
 echo "JupyterAI environment created and activated. You can now start Jupyter Notebook with 'jupyter notebook'."
+
+nbdev_install_quarto
