@@ -72,6 +72,6 @@ else
     echo "Skipped adding conda activation to ~/.zshrc"
 fi
 
-echo "JupyterAI environment created and activated. You can now start Jupyter Notebook with 'jupyter notebook'."
-
 nbdev_install_quarto
+
+echo "JupyterAI environment created and activated. You can now start Jupyter Notebook with 'jupyter notebook'."
