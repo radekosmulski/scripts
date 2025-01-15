@@ -56,6 +56,11 @@ fi
 echo ""
 read -p "Would you like to add 'conda activate jupyterai' to your ~/.zshrc? (y/n) " answer
 if [[ $answer =~ ^[Yy]$ ]]; then
+    # Remove any existing conda activate lines and their comments
+    sed -i.bak '/Automatically activate.*environment/d' ~/.zshrc
+    sed -i.bak '/conda activate/d' ~/.zshrc
+
+    # Add new activation line
     echo -e "\n# Automatically activate jupyterai environment\nconda activate jupyterai" >> ~/.zshrc
     echo "Added conda activation to ~/.zshrc"
     echo "Please restart your terminal or run 'source ~/.zshrc' for changes to take effect"
