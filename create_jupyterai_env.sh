@@ -56,13 +56,17 @@ fi
 echo ""
 read -p "Would you like to add 'conda activate jupyterai' to your ~/.zshrc? (y/n) " answer
 if [[ $answer =~ ^[Yy]$ ]]; then
-    # Remove any existing conda activate lines and their comments
-    sed -i.bak '/Automatically activate.*environment/d' ~/.zshrc
-    sed -i.bak '/conda activate/d' ~/.zshrc
-
-    # Add new activation line
-    echo -e "\n# Automatically activate jupyterai environment\nconda activate jupyterai" >> ~/.zshrc
-    echo "Added conda activation to ~/.zshrc"
+    # Check if jupyterai activation already exists
+    if ! grep -q "# Automatically activate jupyterai environment" ~/.zshrc || \
+       ! grep -q "conda activate jupyterai" ~/.zshrc; then
+        # Remove any conda activate lines
+        sed -i.bak '/conda activate/d' ~/.zshrc
+        # Add jupyterai activation
+        echo -e "\n# Automatically activate jupyterai environment\nconda activate jupyterai" >> ~/.zshrc
+        echo "Added conda activation to ~/.zshrc"
+    else
+        echo "Conda activation for jupyterai already exists in ~/.zshrc"
+    fi
     echo "Please restart your terminal or run 'source ~/.zshrc' for changes to take effect"
 else
     echo "Skipped adding conda activation to ~/.zshrc"
